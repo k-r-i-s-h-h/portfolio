@@ -21,8 +21,16 @@ function App() {
 
   useEffect(() => {
     fetch('/api/projects')
-      .then(res => res.json())
-      .then(data => setProjects(data))
+      .then(async res => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setProjects(data);
+        } else {
+          console.error('API returned non-array:', data);
+          setProjects([]); // Fallback
+        }
+      })
       .catch(err => console.error('Failed to fetch projects:', err));
   }, []);
 
